@@ -13,8 +13,8 @@ int app_flags_custom = 0;
 #define MODE_RUNNING              0x04          //RUNING                        -- LED GREEN On
 #define SEND_DATA_DEFINE_CURRENT  0x08
 #define SEND_DATA_STEP            0x10
-#define SEND_CURRENT_MIN_MAX      0x20
-#define SEND_DATA_VOLTAGE         0x40
+#define SEND_DATA_PRESET          0x20
+#define SEND_DATA_TOUR            0x40
 
 /* Exported macros -----------------------------------------------------------*/
 #define APP_FLAG(flag) (app_flags & flag)
