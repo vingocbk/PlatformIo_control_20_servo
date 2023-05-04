@@ -23,7 +23,8 @@ struct DataConfig
     /* data */
     uint8_t totalPreset = 0;
     String namePreset[20]; 
-    uint8_t anglePreset[20][20]; 
+    uint8_t speedPreset[20]; 
+    uint16_t anglePreset[20][20]; 
     uint8_t totalPresetOfTour1 = 0;
     String namePresetOfTour1[20]; 
     uint8_t totalPresetOfTour2 = 0;
@@ -35,8 +36,6 @@ struct DataConfig
     uint8_t modeOpenTour5 = 0;
     uint8_t modeCloseTour5 = 0;
 }dataConfig;
-
-
 
 void pca9685Init();
 void bluetoothInit();
@@ -70,29 +69,37 @@ void bluetoothInit()
 }
 
 void saveDataPreset(JsonArray& dataPreset){
+    dataConfig.totalPreset = (uint8_t)dataPreset.size();
     EEPROM.write(EEPROM_NUMBER_TOTAL_PRESET,(uint8_t)dataPreset.size());
-    for(int i = 0; i < dataConfig.namePreset->length(); i++){
+    for(int i = 0; i < dataConfig.totalPreset; i++){
         dataConfig.namePreset[i] = "";
     }
-    for(int i = 0; i < dataPreset.size(); i++){
-        String name = dataPreset[i]["1"];
-        ECHO(name);
+    for(int i = 0; i < dataConfig.totalPreset; i++){
+        dataConfig.namePreset[i] = dataPreset[i]["1"].as<String>();
+        ECHO(dataConfig.namePreset[i]);
         ECHO(" - ");
-        dataConfig.namePreset[i] = name;
         //Clear name EERPROM first
         for(int j = 0; j < DISTANT_FROM_2_NAME_OF_PRESET_TOUR; j++){
             EEPROM.write(EEPROM_NAME_PRESET_BEGIN + DISTANT_FROM_2_PRESET*i + j, 0);
         }
         //then save name
-        for (int j = 0; j < name.length(); ++j){
-            EEPROM.write(EEPROM_NAME_PRESET_BEGIN + DISTANT_FROM_2_PRESET*i + j, name[j]);             
+        for (int j = 0; j < dataConfig.namePreset[i].length(); ++j){
+            EEPROM.write(EEPROM_NAME_PRESET_BEGIN + DISTANT_FROM_2_PRESET*i + j, dataConfig.namePreset[i][j]);             
         }
 
-        JsonArray& jsonArrayAngle = dataPreset[i]["2"].as<JsonArray&>();
+        //speed
+        dataConfig.speedPreset[i] = dataPreset[i]["2"];
+        EEPROM.write(EEPROM_SPEED_PRESET_BEGIN + DISTANT_FROM_2_PRESET*i, dataConfig.speedPreset[i]);
+        ECHO( dataConfig.speedPreset[i]);
+        ECHO("-");
+
+        //angle
+        JsonArray& jsonArrayAngle = dataPreset[i]["3"].as<JsonArray&>();
         for(int j = 0; j < jsonArrayAngle.size(); j++){
-            uint8_t angle = jsonArrayAngle[j].as<int>();
-            EEPROM.write(EEPROM_ANGLE_PRESET_BEGIN + DISTANT_FROM_2_PRESET*i + j, angle);
-            ECHO(angle);
+            // uint8_t angle = jsonArrayAngle[j].as<int>();
+            dataConfig.anglePreset[i][j] = jsonArrayAngle[j].as<int>();
+            EEPROM.write(EEPROM_ANGLE_PRESET_BEGIN + DISTANT_FROM_2_PRESET*i + j, dataConfig.anglePreset[i][j]);
+            ECHO(dataConfig.anglePreset[i][j]);
             ECHO("-");
         }
         ECHOLN();
