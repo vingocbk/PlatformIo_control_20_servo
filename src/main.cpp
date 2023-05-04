@@ -47,11 +47,33 @@ void loadDataFromEeprom();
 
 
 void pca9685Init(){
+    // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+    ECHOLN ();
+    ECHOLN ("I2C scanner. Scanning ...");
+
+    int count = 0;
+    for (uint8_t i = 8; i < 120; i++)
+    {
+        Wire.beginTransmission (i);          // Begin I2C transmission Address (i)
+        if (Wire.endTransmission () == 0)  // Receive 0 = success (ACK response) 
+        {
+        Serial.print ("Found address: ");
+        Serial.print (i, DEC);
+        Serial.print (" (0x");
+        Serial.print (i, HEX);     // PCF8574 7 bit address
+        ECHOLN (")");
+        // ina219_info.address_ina[count] = i;
+        count++;
+        }
+    }
+    Serial.print ("Found ");      
+    Serial.print (count, DEC);        // numbers of devices
+    ECHOLN (" device(s).");
 	pwmController_1.resetDevices();       // Resets all PCA9685 devices on i2c line
     pwmController_1.init();               // Initializes module using default totem-pole driver mode, and default disabled phase balancer
     pwmController_1.setPWMFreqServo();    // 50Hz provides standard 20ms servo phase length
 
-	pwmController_2.resetDevices();       // Resets all PCA9685 devices on i2c line
+	// pwmController_2.resetDevices();       // Resets all PCA9685 devices on i2c line
     pwmController_2.init();               // Initializes module using default totem-pole driver mode, and default disabled phase balancer
     pwmController_2.setPWMFreqServo();    // 50Hz provides standard 20ms servo phase length
 }
@@ -181,14 +203,14 @@ void callbackBluetooth(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
 }
 
 
-void readPulseInMode3(void *pvParameters){
-    bool check_start_connect_mode_run = false;
-    unsigned long check_time_begin;
-	for( ;; )
-	{
-		vTaskDelay(100/portTICK_RATE_MS);
-	}
-}
+// void readPulseInMode3(void *pvParameters){
+//     bool check_start_connect_mode_run = false;
+//     unsigned long check_time_begin;
+// 	for( ;; )
+// 	{
+// 		vTaskDelay(100/portTICK_RATE_MS);
+// 	}
+// }
 
 void sendDataToApp(String data){
     ECHOLN("sendDataToApp");
@@ -250,20 +272,78 @@ void setup() {
     Serial.begin (SERIAL_BAUDRATE);  
     Wire.begin (SDA_PIN, SCL_PIN);   // sda= GPIO_21 /scl= GPIO_22
     EEPROM.begin(MAX_SIZE_EEPROM_BUFFER);
-	// pca9685Init();
+    pinMode(PIN_LED_R, OUTPUT);
+    pinMode(PIN_LED_G, OUTPUT);
+    pinMode(PIN_LED_B, OUTPUT);
+    vTaskDelay(10/portTICK_RATE_MS);
+    digitalWrite(PIN_LED_R, LED_ON);
+    digitalWrite(PIN_LED_G, LED_OFF);
+    digitalWrite(PIN_LED_B, LED_OFF);
+	pca9685Init();
 	bluetoothInit();
-    pinMode(0, INPUT_PULLUP);
     loadDataFromEeprom();
 
+    while (1)
+    {
+        for(int i = 102; i < 512; i++){
+            pwmController_1.setChannelPWM(PIN_SERVO_1, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_2, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_3, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_4, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_5, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_6, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_7, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_8, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_9, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_10, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_11, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_12, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_13, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_14, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_15, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_16, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_17, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_18, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_19, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_20, i);
+            vTaskDelay(30/portTICK_RATE_MS);
+        }
 
-	xTaskCreatePinnedToCore(
-		readPulseInMode3,    /* Function to implement the task */
-		"readPulseInMode3",  /* Name of the task */
-		4096,             /* Stack size in words */
-		NULL,             /* Task input parameter */
-		1,                /* Priority of the task */
-		NULL,             /* Task handle. */
-		1);               /* Core where the task should run */
+        for(int i = 512; i > 102; i--){
+            pwmController_1.setChannelPWM(PIN_SERVO_1, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_2, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_3, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_4, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_5, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_6, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_7, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_8, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_9, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_10, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_11, i);
+            pwmController_1.setChannelPWM(PIN_SERVO_12, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_13, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_14, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_15, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_16, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_17, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_18, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_19, i);
+            pwmController_2.setChannelPWM(PIN_SERVO_20, i);
+            vTaskDelay(30/portTICK_RATE_MS);
+        }
+        
+    }
+    
+
+	// xTaskCreatePinnedToCore(
+	// 	readPulseInMode3,    /* Function to implement the task */
+	// 	"readPulseInMode3",  /* Name of the task */
+	// 	4096,             /* Stack size in words */
+	// 	NULL,             /* Task input parameter */
+	// 	1,                /* Priority of the task */
+	// 	NULL,             /* Task handle. */
+	// 	1);               /* Core where the task should run */
 }
 
 void loop() {

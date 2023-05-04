@@ -5,9 +5,15 @@
 
 #define SCL_PIN             22
 #define SDA_PIN             21    
+#define PIN_LED_R           27
+#define PIN_LED_G           32
+#define PIN_LED_B           26
+
+#define LED_ON              LOW
+#define LED_OFF             HIGH
 
 #define ADDRESS_PCA9685_1         0x61    //97
-#define ADDRESS_PCA9685_2         0x62    //98
+#define ADDRESS_PCA9685_2         0x71    //113
 
 #define MAX_RESPONSE_LENGTH     4096
 
@@ -43,7 +49,26 @@
 #define COUNT_READ_PULSEIN      5
 // #define TIME_OUT_PULSEIN        5
 
-
+#define PIN_SERVO_1                 0
+#define PIN_SERVO_2                 1
+#define PIN_SERVO_3                 2
+#define PIN_SERVO_4                 3
+#define PIN_SERVO_5                 4
+#define PIN_SERVO_6                 5
+#define PIN_SERVO_7                 6
+#define PIN_SERVO_8                 7
+#define PIN_SERVO_9                 11
+#define PIN_SERVO_10                10
+#define PIN_SERVO_11                9
+#define PIN_SERVO_12                8
+#define PIN_SERVO_13                0
+#define PIN_SERVO_14                1
+#define PIN_SERVO_15                2
+#define PIN_SERVO_16                3
+#define PIN_SERVO_17                4
+#define PIN_SERVO_18                5
+#define PIN_SERVO_19                6
+#define PIN_SERVO_20                7
 
 
 #endif
